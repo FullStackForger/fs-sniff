@@ -24,7 +24,8 @@ Method returns promise. If file exist promise resolve with `file` object, which 
 
 ### `file(path, options)`
 
-Method `file` allows "sniffing" options object to be passed as a second parameter. It should have either of (or both) properties
+Method `file` allows "sniffing" options object to be passed as a second parameter. It should have either of (or both) properties:
+
  - `index` - array of index files
 
 ```js
@@ -34,7 +35,7 @@ require('fs-sniff').file('public', {
   return console.log(file)
 })
 ```   
-it will look for `public/index.html` and `public/index.htm` in that order
+It will look for `public/index.html` and `public/index.htm` in that order
 
 - `ext` - file extensions you are looking for
 
