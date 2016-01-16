@@ -11,20 +11,24 @@ fsSniff.file = function(filePath, opts) {
   let filePathArr = filePath instanceof Array ? filePath : [filePath]
 	let indexes = options.index || []
 	let extensions = options.ext || []
-	let filePaths = []
+	let fileTestPaths = []
+
+	indexes = indexes instanceof Array ? indexes : [indexes]
+	extensions = extensions instanceof Array ? extensions : [extensions]
 
 	filePathArr.forEach((fPath) => {
-		filePaths.push(fPath)
+		let isFileName = fPath.search(/[\/\\]\w+\.\w+$/ig) > -1
+		
+		fileTestPaths.push(fPath)
+		if (isFileName) return;
 
-		indexes = indexes instanceof Array ? indexes : [indexes]
 		indexes.forEach((indexFile) => {
-			filePaths.push(path.resolve(fPath, indexFile))
+			fileTestPaths.push(path.resolve(fPath, indexFile))
 		})
 
-		extensions = extensions instanceof Array ? extensions : [extensions]
 		extensions.forEach((ext) => {
 			if (ext[0] !== '.') ext = '.' + ext
-			filePaths.push(fPath + ext)
+			fileTestPaths.push(fPath + ext)
 		})
 	})
 
@@ -33,14 +37,13 @@ fsSniff.file = function(filePath, opts) {
 		let file = null
 
 		doWhile(() => {
-			return file === null && index < filePaths.length
+			return file === null && index < fileTestPaths.length
 		}, (next) => {
-			fs.stat(filePaths[index], (error, fsStats) => {
+			fs.stat(fileTestPaths[index], (error, fsStats) => {
 				if (error === null && fsStats.isFile()) file = {
-					path: filePaths[index],
+					path: fileTestPaths[index],
 					stats: fsStats
 				}
-				//console.log(index, file !== null, filePaths[index]);
 				index++
 				return next()
 			})
@@ -59,8 +62,4 @@ function doWhile(testFn, mainFn, completeFn) {
 	} else {
 		completeFn()
 	}
-}
-
-function hasExtension(fileName) {
-  fileName.lastIndexOf('.') >= fileName.length - 4
 }
