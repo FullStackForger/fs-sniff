@@ -19,10 +19,10 @@ require('fs-sniff')
 ```        
 
 Method returns promise. If file exist promise resolve with `file` object, which contains 2 parameters:
- - `path` - file location (string)
+ - `path` - file locations. Can be a string or an array.
  - `stats` - [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats) object
 
-### `file(path, options)`
+#### `file(path, options)`
 
 Method `file` allows "sniffing" options object to be passed as a second parameter. It should have either of (or both) properties:
 

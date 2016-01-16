@@ -8,21 +8,24 @@ module.exports = fsSniff
 
 fsSniff.file = function(filePath, opts) {
 	let options = opts || {}
+  let filePathArr = filePath instanceof Array ? filePath : [filePath]
 	let indexes = options.index || []
 	let extensions = options.ext || []
 	let filePaths = []
 
-	filePaths.push(filePath)
+	filePathArr.forEach((fPath) => {
+		filePaths.push(fPath)
 
-	indexes = indexes instanceof Array ? indexes : [indexes];
-	indexes.forEach((indexFile) => {
-		filePaths.push(path.resolve(filePath, indexFile))
-	})
+		indexes = indexes instanceof Array ? indexes : [indexes]
+		indexes.forEach((indexFile) => {
+			filePaths.push(path.resolve(fPath, indexFile))
+		})
 
-	extensions = extensions instanceof Array ? extensions : [extensions];
-	extensions.forEach((ext) => {
-		if (ext[0] !== '.') ext = '.' + ext
-		filePaths.push(filePath + ext)
+		extensions = extensions instanceof Array ? extensions : [extensions]
+		extensions.forEach((ext) => {
+			if (ext[0] !== '.') ext = '.' + ext
+			filePaths.push(fPath + ext)
+		})
 	})
 
 	return new Promise(function (resolve, reject) {
@@ -56,4 +59,8 @@ function doWhile(testFn, mainFn, completeFn) {
 	} else {
 		completeFn()
 	}
+}
+
+function hasExtension(fileName) {
+  fileName.lastIndexOf('.') >= fileName.length - 4
 }
