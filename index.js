@@ -18,12 +18,12 @@ fsSniff.file = function(filePath, opts) {
 
 	filePathArr.forEach((fPath) => {
 		let isFileName = fPath.search(/[\/\\]\w+\.\w+$/ig) > -1
-		
+
 		fileTestPaths.push(fPath)
 		if (isFileName) return;
 
 		indexes.forEach((indexFile) => {
-			fileTestPaths.push(path.resolve(fPath, indexFile))
+			fileTestPaths.push(path.join(fPath, indexFile))
 		})
 
 		extensions.forEach((ext) => {
