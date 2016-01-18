@@ -60,7 +60,7 @@ fsSniff.file = function(locations, opts) {
 		})
 	})
 
-	fileTestPaths.forEach((fTestPath) => console.log(fTestPath))
+	//fileTestPaths.forEach((fTestPath) => console.log(fTestPath))
 
 	return new Promise(function (resolve, reject) {
 		let index = 0
