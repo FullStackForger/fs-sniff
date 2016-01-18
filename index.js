@@ -6,17 +6,45 @@ const
 
 module.exports = fsSniff
 
-fsSniff.file = function(filePath, opts) {
+fsSniff.tree = function(rootDir, cb) {
+	fs.readdir(rootDir, (err, files) => {
+		let index = -1
+		let dirs = []
+		if (!files) return cb(dirs)
+		doWhile(() => {
+			return ++index < files.length
+		}, (next) => {
+			let file = files[index]
+			let filePath = rootDir + '/' + file
+			if (file[0] === '.') return next()
+			fs.stat(filePath, function(err, stat) {
+				if (stat.isDirectory()) {
+					dirs.push(file)
+					fsSniff.tree(path.resolve(rootDir, file), (subdirs) => 	{
+						subdirs.forEach((subdir) => {
+							dirs.push(path.join(file, subdir))
+						})
+						next()
+					})
+				} else next()
+			})
+		}, () => {
+			return cb(dirs)
+		})
+	})
+}
+
+fsSniff.file = function(locations, opts) {
 	let options = opts || {}
-  let filePathArr = filePath instanceof Array ? filePath : [filePath]
 	let indexes = options.index || []
 	let extensions = options.ext || []
 	let fileTestPaths = []
 
+	locations = locations instanceof Array ? locations : [locations]
 	indexes = indexes instanceof Array ? indexes : [indexes]
 	extensions = extensions instanceof Array ? extensions : [extensions]
 
-	filePathArr.forEach((fPath) => {
+	locations.forEach((fPath) => {
 		let isFileName = fPath.search(/[\/\\]\w+\.\w+$/ig) > -1
 
 		fileTestPaths.push(fPath)
@@ -31,6 +59,8 @@ fsSniff.file = function(filePath, opts) {
 			fileTestPaths.push(fPath + ext)
 		})
 	})
+
+	fileTestPaths.forEach((fTestPath) => console.log(fTestPath))
 
 	return new Promise(function (resolve, reject) {
 		let index = 0
