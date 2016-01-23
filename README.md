@@ -6,11 +6,13 @@ Simple helper sniffing for files based on provided patterns.
 
 ### `file(path)`
 
-Searches for local files based on passed parameters`docs/readme.md` file you can do it calling `file` method.
+Searches for local files based on passed parameters.
+
+If you searching for `docs/readme.md` file you can call `file()` method passing path as a parameter.
 
 ```js
 require('fs-sniff')
-  .file('docs/readme.md')
+  .file('docs/readme.md')     // file location
   .then((file) => {
     return console.log(file)
   }).catch((error) => {
@@ -19,8 +21,23 @@ require('fs-sniff')
 ```        
 
 Method returns promise. If file exist promise resolve with `file` object, which contains 2 parameters:
- - `path` - file locations. Can be a string or an array.
- - `stats` - [fs.Stats](https://nodejs.org/api/fs.html#fs_class_fs_stats) object
+ - `path` - file location (string)
+ - `stats` - [fs.Stats
+ ](https://nodejs.org/api/fs.html#fs_class_fs_stats) object
+
+If you would like to check if file exists in more than one directory you can call `file()` method passing into it an array of paths, eg.:
+
+```js
+require('fs-sniff')
+  .file([
+    'docs/readme.md',          // first possible location
+    'temp/docs/readme.md'      // second possible location
+  ]).then((file) => {
+    return console.log(file)
+  }).catch((error) => {
+    console.log(error)
+  })
+```  
 
 #### `file(path, options)`
 
