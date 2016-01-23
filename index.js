@@ -2,34 +2,74 @@
 const
 	fs = require('fs'),
 	path = require('path'),
-	fsSniff = {}
+	fsSniff = {},
+	dirNameReg = /([\w-_]*)$/
 
 module.exports = fsSniff
 
-fsSniff.tree = function(rootDir, cb) {
-	fs.readdir(rootDir, (err, files) => {
-		let index = -1
-		let dirs = []
-		if (!files) return cb(dirs)
-		doWhile(() => {
-			return ++index < files.length
-		}, (next) => {
-			let file = files[index]
-			let filePath = rootDir + '/' + file
-			if (file[0] === '.') return next()
-			fs.stat(filePath, function(err, stat) {
-				if (stat.isDirectory()) {
-					dirs.push(file)
-					fsSniff.tree(path.resolve(rootDir, file), (subdirs) => 	{
-						subdirs.forEach((subdir) => {
-							dirs.push(path.join(file, subdir))
-						})
+fsSniff.tree = function(rootDir) {
+	return new Promise((resolve, reject) => {
+		fs.readdir(rootDir, (err, files) => {
+			let index = -1
+			let data = {
+				name: rootDir.match(dirNameReg)[1],
+				path: path.resolve(rootDir),
+				dirs: [],
+				files: []
+			}
+			if (!files) return resolve(data)
+			doWhile(() => {
+				return ++index < files.length
+			}, (next) => {
+				let file = files[index]
+				let filePath = rootDir + '/' + file
+				if (file[0] === '.') return next()
+				fs.stat(filePath, function(err, stat) {
+					if (stat.isDirectory()) {
+						fsSniff
+							.tree(path.resolve(rootDir, file))
+							.then((subDirData) => 	{
+								data.dirs.push(subDirData)
+								next()
+							})
+					} else {
+						data.files.push(file)
 						next()
-					})
-				} else next()
+					}
+				})
+			}, () => {
+				return resolve(data)
 			})
-		}, () => {
-			return cb(dirs)
+		})
+	})
+}
+
+fsSniff.list = function(rootDir) {
+	return new Promise((resolve, reject) => {
+		fs.readdir(rootDir, (err, files) => {
+			let index = -1
+			let dirs = []
+			if (!files) return resolve(dirs)
+			doWhile(() => {
+				return ++index < files.length
+			}, (next) => {
+				let file = files[index]
+				let filePath = rootDir + '/' + file
+				if (file[0] === '.') return next()
+				fs.stat(filePath, function(err, stat) {
+					if (stat.isDirectory()) {
+						dirs.push(file)
+						fsSniff
+							.list(path.resolve(rootDir, file))
+							.then((subdirs) => {
+								subdirs.forEach((subdir) => dirs.push(path.join(file, subdir)))
+								next()
+							})
+					} else next()
+				})
+			}, () => {
+				return resolve(dirs)
+			})
 		})
 	})
 }
