@@ -44,7 +44,14 @@ fsSniff.tree = function(rootDir) {
 	})
 }
 
-fsSniff.list = function(rootDir) {
+fsSniff.list = function(rootDir, opts) {
+	opts = opts || {}
+	opts.type = (opts.type == 'file' || opts.type == 'dir')
+		? opts.type
+		: 'all'
+	opts.depth = (opts.depth && typeof(opts.depth) == 'number' && opts.depth >= 0)
+		? opts.depth
+		: 0
 	return new Promise((resolve, reject) => {
 		fs.readdir(rootDir, (err, files) => {
 			let index = -1
@@ -58,14 +65,21 @@ fsSniff.list = function(rootDir) {
 				if (file[0] === '.') return next()
 				fs.stat(filePath, function(err, stat) {
 					if (stat.isDirectory()) {
-						dirs.push(file)
+						if (opts.type == 'all' || opts.type == 'dir') dirs.push(file)
+						if (opts.depth == 0) return next()
 						fsSniff
-							.list(path.resolve(rootDir, file))
+							.list(path.resolve(rootDir, file), {
+								type: opts.type,
+								depth: opts.depth - 1
+							})
 							.then((subdirs) => {
 								subdirs.forEach((subdir) => dirs.push(path.join(file, subdir)))
 								next()
 							})
-					} else next()
+					} else {
+						if (opts.type == 'all' || opts.type == 'file') dirs.push(file)
+						next()
+					}
 				})
 			}, () => {
 				return resolve(dirs)

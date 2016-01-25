@@ -64,3 +64,30 @@ require('fs-sniff').file('lib/script', {
 })
 ```   
 It will look for `lib/script.jsx`, `lib/script.js`, `lib/script.cofee` in that order
+
+#### `file(path, options)`
+
+Returns list of files from `path` location. I takes two parameters:
+- `path` location string
+- `opts` object as an optional parameter with two properties
+  - `depth` recursive listing depth (default: 0)
+  - `type` file type string: `'all'` (default), `'file'`, `'path'`
+
+```js
+require('fs-sniff')
+	.list(config.blog.path, {type: 'dir', depth: 2})
+	.then((list) => {
+		console.log(JSON.stringify(list, null, 2))
+	})
+```
+
+Sold output something like:
+```
+[
+  "category",
+  "category1",
+  "category1\subcategory",
+  "category2",
+  "category2\subcategory"
+]
+```
