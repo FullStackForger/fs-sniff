@@ -2,6 +2,8 @@
 const
 	fs = require('fs'),
 	path = require('path'),
+	forger = require('forger'),
+	doWhile = forger.doWhile,
 	fsSniff = {},
 	dirNameReg = /([\w-_]*)$/
 
@@ -23,9 +25,7 @@ fsSniff.tree = function(rootDir, opts) {
 				files: []
 			}
 			if (!files) return resolve(data)
-			doWhile(() => {
-				return ++index < files.length
-			}, (next) => {
+			doWhile((next) => {
 				let file = files[index]
 				let filePath = rootDir + '/' + file
 				if (file[0] === '.') return next()
@@ -46,6 +46,8 @@ fsSniff.tree = function(rootDir, opts) {
 					}
 				})
 			}, () => {
+				return ++index < files.length
+			}).then(() => {
 				return resolve(data)
 			})
 		})
@@ -65,9 +67,7 @@ fsSniff.list = function(rootDir, opts) {
 			let index = -1
 			let dirs = []
 			if (!files) return resolve(dirs)
-			doWhile(() => {
-				return ++index < files.length
-			}, (next) => {
+			doWhile((next) => {
 				let file = files[index]
 				let filePath = rootDir + '/' + file
 				if (file[0] === '.') return next()
@@ -89,6 +89,8 @@ fsSniff.list = function(rootDir, opts) {
 					}
 				})
 			}, () => {
+				return ++index < files.length
+			}).then(() => {
 				return resolve(dirs)
 			})
 		})
@@ -127,11 +129,9 @@ fsSniff.file = function(locations, opts) {
 		let index = 0
 		let file = null
 
-		doWhile(() => {
-			return file === null && index < fileTestPaths.length
-		}, (next) => {
+		doWhile((next) => {
 			fs.stat(fileTestPaths[index], (error, fsStats) => {
-				if (error === null && fsStats.isFile()) file = {
+				if (error === null) file = {
 					path: fileTestPaths[index],
 					stats: fsStats
 				}
@@ -139,18 +139,10 @@ fsSniff.file = function(locations, opts) {
 				return next()
 			})
 		}, () => {
+			return file === null && index < fileTestPaths.length
+		}).then(() => {
 			if (file != null) return resolve(file)
 			reject(new Error('File not found for any matching patterns'))
 		})
 	})
-}
-
-function doWhile(testFn, mainFn, completeFn) {
-	if (testFn()) {
-		mainFn(() => {
-			doWhile(testFn, mainFn, completeFn)
-		})
-	} else {
-		completeFn()
-	}
 }
