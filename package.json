@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/indieforger/fs-sniff#readme",
   "dependencies": {
-    "forger": "^1.0.1"
+    "forger": "^1.1.0"
   }
 }
