@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/indieforger/fs-sniff/issues"
   },
-  "homepage": "https://github.com/indieforger/fs-sniff#readme"
+  "homepage": "https://github.com/indieforger/fs-sniff#readme",
+  "dependencies": {
+    "forger": "^1.0.1"
+  }
 }
