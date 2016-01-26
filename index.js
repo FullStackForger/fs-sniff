@@ -7,12 +7,17 @@ const
 
 module.exports = fsSniff
 
-fsSniff.tree = function(rootDir) {
+fsSniff.tree = function(rootDir, opts) {
+	opts = opts || {}
+	opts.uriPrefix = opts.uriPrefix || null // added to slug
+	opts.depth = (opts.depth && opts.depth >= 0) ? opts.depth : 0
 	return new Promise((resolve, reject) => {
 		fs.readdir(rootDir, (err, files) => {
 			let index = -1
+			let name = rootDir.match(dirNameReg)[1]
 			let data = {
-				name: rootDir.match(dirNameReg)[1],
+				name: name,
+				uri: opts.uriPrefix ? opts.uriPrefix + '/' + name : name,
 				path: path.resolve(rootDir),
 				dirs: [],
 				files: []
@@ -26,9 +31,12 @@ fsSniff.tree = function(rootDir) {
 				if (file[0] === '.') return next()
 				fs.stat(filePath, function(err, stat) {
 					if (stat.isDirectory()) {
+						if (opts.depth == 0) return next()
 						fsSniff
-							.tree(path.resolve(rootDir, file))
-							.then((subDirData) => 	{
+							.tree(path.resolve(rootDir, file), {
+								uriPrefix: data.uri,
+								depth: opts.depth - 1
+							}).then((subDirData) => 	{
 								data.dirs.push(subDirData)
 								next()
 							})
@@ -71,8 +79,7 @@ fsSniff.list = function(rootDir, opts) {
 							.list(path.resolve(rootDir, file), {
 								type: opts.type,
 								depth: opts.depth - 1
-							})
-							.then((subdirs) => {
+							}).then((subdirs) => {
 								subdirs.forEach((subdir) => dirs.push(path.join(file, subdir)))
 								next()
 							})
