@@ -65,13 +65,13 @@ require('fs-sniff').file('lib/script', {
 ```   
 It will look for `lib/script.jsx`, `lib/script.js`, `lib/script.cofee` in that order
 
-#### `file(path, options)`
+#### `list(path, options)`
 
 Returns list of files from `path` location. I takes two parameters:
 - `path` location string
 - `opts` object as an optional parameter with two properties
   - `depth` recursive listing depth (default: 0)
-  - `type` file type string: `'all'` (default), `'file'`, `'path'`
+  - `type` file type string: `'any'` (default), `'file'`, `'path'`
 
 ```js
 require('fs-sniff')

@@ -58,7 +58,7 @@ fsSniff.list = function(rootDir, opts) {
 	opts = opts || {}
 	opts.type = (opts.type == 'file' || opts.type == 'dir')
 		? opts.type
-		: 'all'
+		: 'any'
 	opts.depth = (opts.depth && typeof(opts.depth) == 'number' && opts.depth >= 0)
 		? opts.depth
 		: 0
@@ -73,7 +73,7 @@ fsSniff.list = function(rootDir, opts) {
 				if (file[0] === '.') return next()
 				fs.stat(filePath, function(err, stat) {
 					if (stat.isDirectory()) {
-						if (opts.type == 'all' || opts.type == 'dir') dirs.push(file)
+						if (opts.type == 'any' || opts.type == 'dir') dirs.push(file)
 						if (opts.depth == 0) return next()
 						fsSniff
 							.list(path.resolve(rootDir, file), {
@@ -84,7 +84,7 @@ fsSniff.list = function(rootDir, opts) {
 								next()
 							})
 					} else {
-						if (opts.type == 'all' || opts.type == 'file') dirs.push(file)
+						if (opts.type == 'any' || opts.type == 'file') dirs.push(file)
 						next()
 					}
 				})
