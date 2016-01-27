@@ -109,7 +109,9 @@ fsSniff.file = function(locations, opts) {
 	indexes = indexes instanceof Array ? indexes : [indexes]
 	extensions = extensions instanceof Array ? extensions : [extensions]
 
-	if (extensions.length > 0 || indexes.length > 0) fileType = 'file'
+	if (!opts.type && (extensions.length > 0 || indexes.length > 0)) {
+		fileType = 'file'
+	}
 
 	locations.forEach((fPath) => {
 		let isFileName = fPath.search(/[\/\\]\w+\.\w+$/ig) > -1

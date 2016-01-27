@@ -52,17 +52,26 @@ Below code will look for `public/index.html` and `public/index.htm` in that orde
 ```js
 require('fs-sniff').file('public', {
   index: ['index.html', 'index.htm'],
-  // type: 'file'  // set by default because of 'index' property
+  //type: 'file'  // set by default because of 'index' property
 }).then((file) => {
   return console.log(file)
 })
 ```   
 
-Another example, looking for `lib/script.jsx`, `lib/script.js`, `lib/script.cofee` in that order
+Another example, looking for directory:
+  - `lib/script/`
+
+and files:
+ - `lib/script.jsx`,
+ - `lib/script.js`
+ - `lib/script.cofee`
+
+in that order.
+
 ```js
 require('fs-sniff').file('lib/script', {
   ext: ['jsx', 'js', 'coffee'],
-  // type: 'file'  // set by default because of 'ext' property
+  type: 'any'
 }).then((file) => {
   return console.log(file)
 })
