@@ -1,6 +1,6 @@
 {
   "name": "fs-sniff",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "File system sniffer",
   "main": "index.js",
   "scripts": {
