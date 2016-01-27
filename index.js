@@ -98,14 +98,18 @@ fsSniff.list = function(rootDir, opts) {
 }
 
 fsSniff.file = function(locations, opts) {
-	let options = opts || {}
-	let indexes = options.index || []
-	let extensions = options.ext || []
+	opts = opts || {}
+
+	let fileType = (opts.type == 'file' || opts.type == 'dir') ? opts.type : 'any'
+	let indexes = opts.index || []
+	let extensions = opts.ext || []
 	let fileTestPaths = []
 
 	locations = locations instanceof Array ? locations : [locations]
 	indexes = indexes instanceof Array ? indexes : [indexes]
 	extensions = extensions instanceof Array ? extensions : [extensions]
+
+	if (extensions.length > 0 || indexes.length > 0) fileType = 'file'
 
 	locations.forEach((fPath) => {
 		let isFileName = fPath.search(/[\/\\]\w+\.\w+$/ig) > -1
@@ -131,7 +135,10 @@ fsSniff.file = function(locations, opts) {
 
 		doWhile((next) => {
 			fs.stat(fileTestPaths[index], (error, fsStats) => {
-				if (error === null) file = {
+				if ((error === null) &&	(
+					(fsStats.isDirectory() && (fileType == 'any' || fileType == 'dir')) ||
+					(fsStats.isFile() && (fileType == 'any' || fileType == 'file'))
+				)) file = {
 					path: fileTestPaths[index],
 					stats: fsStats
 				}

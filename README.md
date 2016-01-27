@@ -44,26 +44,30 @@ require('fs-sniff')
 Method `file` allows "sniffing" options object to be passed as a second parameter. It should have either of (or both) properties:
 
  - `index` - array of index files
+ - `ext` - file extensions you are looking for
+ - `type` file type string: `'any'` (default), `'file'`, `'dir'`
 
+
+Below code will look for `public/index.html` and `public/index.htm` in that order
 ```js
 require('fs-sniff').file('public', {
-  index: ['index.html', 'index.htm']
+  index: ['index.html', 'index.htm'],
+  // type: 'file'  // set by default because of 'index' property
 }).then((file) => {
   return console.log(file)
 })
 ```   
-It will look for `public/index.html` and `public/index.htm` in that order
 
-- `ext` - file extensions you are looking for
-
+Another example, looking for `lib/script.jsx`, `lib/script.js`, `lib/script.cofee` in that order
 ```js
 require('fs-sniff').file('lib/script', {
-  ext: ['jsx', 'js', 'coffee']
+  ext: ['jsx', 'js', 'coffee'],
+  // type: 'file'  // set by default because of 'ext' property
 }).then((file) => {
   return console.log(file)
 })
 ```   
-It will look for `lib/script.jsx`, `lib/script.js`, `lib/script.cofee` in that order
+
 
 #### `list(path, options)`
 
@@ -71,7 +75,7 @@ Returns list of files from `path` location. I takes two parameters:
 - `path` location string
 - `opts` object as an optional parameter with two properties
   - `depth` recursive listing depth (default: 0)
-  - `type` file type string: `'any'` (default), `'file'`, `'path'`
+  - `type` file type string: `'any'` (default), `'file'`, `'dir'`
 
 ```js
 require('fs-sniff')
