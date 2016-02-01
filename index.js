@@ -5,7 +5,7 @@ const
 	forger = require('forger'),
 	doWhile = forger.doWhile,
 	fsSniff = {},
-	dirNameReg = /([\w-_]*)$/
+	dirNameReg = /([\w-_.]*)$/
 
 module.exports = fsSniff
 
