@@ -88,19 +88,54 @@ Returns list of files from `path` location. I takes two parameters:
 
 ```js
 require('fs-sniff')
-	.list(config.blog.path, {type: 'dir', depth: 2})
+	.list('path/to/a/folder', {type: 'dir', depth: 2})
 	.then((list) => {
 		console.log(JSON.stringify(list, null, 2))
 	})
 ```
 
-Sold output something like:
+Should output something like:
 ```
 [
-  "category",
-  "category1",
-  "category1\subcategory",
-  "category2",
-  "category2\subcategory"
+  "directory-1",
+  "directory-1\subcategory-1",
+  "directory-1\subcategory-2",
 ]
 ```
+
+
+#### `tree(path, options)`
+
+Returns array of `dir` objects from `path` location. Method takes two parameters:
+`poath` and `options` object with internal properties listed below.
+- `path` location string
+- `opts` object as an optional parameter with two properties
+  - `depth` recursive listing depth (default: 0)
+  - `rootPrefix` if `false` it won't prefix `uri` properties with root directory
+
+```js
+require('fs-sniff')
+	.tree(config.blog.path, {rootPrefix: 'false', depth: 2})
+	.then((list) => {
+		console.log(JSON.stringify(list, null, 2))
+	})
+```
+
+Should output something like:
+```
+{
+  "name": "example",
+  "uri": "",
+  "path": "full/path/to/directory",
+  "dirs": [
+    /* nested dir objects */
+  ],
+  "files": [
+    "index.js",
+    "another-file.md
+  ]
+}
+
+```
+Notice that `uri` property is empty (`""`) because `opts.rootPrefix` parameter
+passed to a method is set to `false`
