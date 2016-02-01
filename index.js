@@ -13,6 +13,7 @@ fsSniff.tree = function(rootDir, opts) {
 	opts = opts || {}
 	opts.uriPrefix = opts.uriPrefix || null // added to slug
 	opts.depth = (opts.depth && opts.depth >= 0) ? opts.depth : 0
+	opts.rootPrefix = opts.rootPrefix === false ? false : true
 	return new Promise((resolve, reject) => {
 		fs.readdir(rootDir, (err, files) => {
 			let index = -1
@@ -24,6 +25,7 @@ fsSniff.tree = function(rootDir, opts) {
 				dirs: [],
 				files: []
 			}
+			if (data.uri === name && !opts.rootPrefix) { data.uri = "" }
 			if (!files) return resolve(data)
 			doWhile((next) => {
 				let file = files[index]
